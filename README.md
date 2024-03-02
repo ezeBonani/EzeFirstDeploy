@@ -1,8 +1,10 @@
-# React + Vite
+This tiny code was created following a code challenge.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The challenge was:
 
-Currently, two official plugins are available:
+* connect to Cat Fact API-Rest and get some random cat fact
+* take the first 3 words from previous fact and connect to Giphy API-Rest and seach a giph using this words
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This front-end code was made using React JS and it was deployed in Netlify in the following link:
+https://ezefirstdeploy.netlify.app/
+
