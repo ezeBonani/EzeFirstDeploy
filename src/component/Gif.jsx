@@ -3,7 +3,7 @@
 
 const Gif = ({gifData}) => {
   //console.log(gifData);
-  let gif = gifData.data.images.downsized.url;
+  let gif = gifData?.data?.images?.downsized?.url;
   
   return (
     <>
