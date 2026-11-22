@@ -35,7 +35,7 @@ function App() {
       alert(error);
       setLoader(false);
     } finally {
-      clearTimeout(timeoutId);
+      clearTimeout(timeoutId); //borrar el timeout
     }
   }
 
