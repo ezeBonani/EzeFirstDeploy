@@ -4,7 +4,6 @@ import FraseGatos from "./component/FraseGatos";
 import Gif from "./component/Gif";
 import { Link, Outlet } from "react-router-dom";
 
-
 const urlCat = "https://catfact.ninja/fact";
 
 function App() {
@@ -13,12 +12,13 @@ function App() {
   const [loader, setLoader] = useState(false);
 
   async function catFactApi() {
-
+    console.log("llamando catFact");
     const controller = new AbortController();
     const signal = controller.signal;
-    setTimeout(() => controller.abort(), 5000);
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
 
     try {
+      setLoader(true);
       let res = await fetch(urlCat, { signal });
 
       if (!res.ok) {
@@ -29,24 +29,25 @@ function App() {
       }
 
       let json = await res.json();
-      
-      if (!signal.aborted)
-        setCatFact(json.fact);
 
-    } catch(error) {
-        alert(error);
+      if (!signal.aborted) setCatFact(json.fact);
+    } catch (error) {
+      alert(error);
+      setLoader(false);
+    } finally {
+      clearTimeout(timeoutId);
     }
   }
 
   async function gifApi(searchGif) {
     const controller = new AbortController();
     const signal = controller.signal;
-    setTimeout(()=>controller.abort(),5000);
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
 
     try {
-      let res = await fetch(searchGif,{signal});
+      let res = await fetch(searchGif, { signal });
 
-      if(!res.ok){
+      if (!res.ok) {
         let error = new Error("Ocurrió un error!");
         error.status = res.status;
         error.statusText = res.statusText;
@@ -55,28 +56,33 @@ function App() {
 
       let data = await res.json();
 
-      if(!signal.aborted)
-        setGifData(data);
+      if (!data?.data?.images?.downsized?.url && !signal.aborted) {
+        const fallbackUrl = `https://api.giphy.com/v1/gifs/random?api_key=0ahJfBK8m0B8x5MVdf9G2v458hW5OVIh&tag=cat&rating=g`;
+        const fallbackRes = await fetch(fallbackUrl, { signal });
+        if (fallbackRes.ok) {
+          data = await fallbackRes.json();
+        }
+      }
 
-    } catch(error) {
+      if (!signal.aborted) setGifData(data);
+    } catch (error) {
       alert(error);
     } finally {
       setLoader(false);
+      clearTimeout(timeoutId);
     }
     //console.log(data);
   }
 
   useEffect(() => {
-    //console.log("llamando catFact");
     catFactApi();
   }, []);
 
   useEffect(() => {
     if (catFact !== "") {
-      //console.log("llamando gifApi");
       let first3 = catFact.split(" ", 3).join("+");
+      console.log("llamando gifApi", first3);
       let searchGif = `https://api.giphy.com/v1/gifs/random?api_key=0ahJfBK8m0B8x5MVdf9G2v458hW5OVIh&tag=${first3}&rating=g`;
-      setLoader(true);
       gifApi(searchGif);
     }
   }, [catFact]);
@@ -104,13 +110,15 @@ function App() {
       <br />
       <br />
       <div style={{ display: "flex", justifyContent: "center" }}>
-        <button onClick={catFactApi}>Generar</button>
+        <button onClick={catFactApi} disabled={loader}>
+          {loader ? "Generando..." : "Generar"}
+        </button>
       </div>
       <br />
       <br />
       <div className="links">
         <Link to="/enunciado">Enunciado</Link>
-        <Outlet/>
+        <Outlet />
         <Link to="/about">Sobre mi</Link>
         <br />
       </div>
